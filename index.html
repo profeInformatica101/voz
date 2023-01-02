@@ -1,35 +1,45 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Escuchar voz</title>
 </head>
 <body>
-    <button id="record">Record Voice</button>
+	<p>Pulsa el botón y hable</p>
+    <button id="escuchado">Escuchar voz</button>
+    <div id="texto"></div>
 <script>
-// Set up a new Speech Recognizer
-const recognition = new webkitSpeechRecognition();
-// Set the new language setting.
-recognition.lang = "en-US";
-recognition.continuous = false;
-recognition.interimResults = false;
+if ('SpeechRecognition' in window) {
+  // El navegador del usuario admite la API de reconocimiento de voz de HTML5
+  const recognition = new SpeechRecognition();
+  recognition.lang = 'es';  // Establece el idioma en español
+  recognition.continuous = false;
+  recognition.interimResults = false;
 
-// Start recognizing after the button is clicked.
-document.getElementById("record").onclick = function() {
-  recognition.start();
-  console.log('Listening...');
+  // Inicia el proceso de reconocimiento de voz al hacer clic en el botón
+  document.getElementById("escuchado").onclick = function() {
+    recognition.start();
+    console.log('Escuchando...');
+  }
+
+  // Muestra la transcripción y la confianza en el elemento de texto una vez que se ha procesado el resultado
+  recognition.addEventListener('result', (event) => {
+    var transcript = event.results[0][0].transcript;
+    console.log(transcript);
+    console.log('Confianza: ' + event.results[0][0].confidence);
+    document.getElementById("texto").innerHTML = "<h1>"+transcript+"</h1>"+"<br><h2>Confianza: "+ event.results[0][0].confidence + "</h2>";
+  });
+
+  // Maneja los errores
+  recognition.addEventListener('error', (event) => {
+    console.error(event.error);  // Imprime el error
+  });
+} else {
+  // El navegador del usuario no admite la API de reconocimiento de voz de HTML5
+  console.error('Speech recognition is not supported in this browser');
 }
-
-// Once a result is parsed, send the parsed text to a Rasa server
-// Note that all of this is asynchronous, we update on response
-recognition.onresult = function(event) {
-  var transcript = event.results[0][0].transcript;
-  // Log the transcript 
-  console.log(transcript)
-  console.log('Confidence: ' + event.results[0][0].confidence);
-	}
 </script>
 </body>
 </html>
