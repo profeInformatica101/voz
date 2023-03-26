@@ -27,13 +27,21 @@
         recognition.continuous = false;
         recognition.interimResults = false;
 
+        // Keep track of the recognition state
+        let isRecognizing = false;
+
         // Start recognizing after the button is clicked.
         document.getElementById("record").onclick = function() {
+            if (isRecognizing) {
+                return;
+            }
+
             // Set the language setting based on the selected option.
             const languageSelect = document.getElementById("language");
             recognition.lang = languageSelect.value;
 
             recognition.start();
+            isRecognizing = true;
             console.log('Listening...');
         }
 
@@ -43,8 +51,15 @@
             // Display the transcript on screen.
             document.getElementById("transcript").innerText = transcript;
             console.log('Confidence: ' + event.results[0][0].confidence);
+            isRecognizing = false;
+        }
+
+        // Handle recognition end event
+        recognition.onend = function() {
+            isRecognizing = false;
         }
     </script>
 </body>
 </html>
+
 
