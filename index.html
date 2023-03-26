@@ -6,10 +6,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <style>
+        body {
+            background-color: white;
+            color: black;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
         #transcript {
             margin-top: 20px;
             font-size: 18px;
-            font-family: Arial, sans-serif;
+        }
+        textarea {
+            margin-top: 20px;
         }
     </style>
 </head>
@@ -30,14 +37,14 @@
         recognition.interimResults = true;
 
         // Keep track of the recognition state
-        let isRecognizing = false;
+        recognition.recognizing = false;
 
         // Set up the buffer
         let buffer = '';
 
         // Start recognizing after the button is clicked.
         document.getElementById("record").onclick = function() {
-            if (isRecognizing) {
+            if (recognition && recognition.recognizing) {
                 return;
             }
 
@@ -46,7 +53,7 @@
             recognition.lang = languageSelect.value;
 
             recognition.start();
-            isRecognizing = true;
+            recognition.recognizing = true;
             console.log('Listening...');
         }
 
@@ -67,19 +74,18 @@
                         buffer += event.results[i][0].transcript + " ";
                     }
                 } else {
-                    transcript += event.results[i][0].transcript + " (interim)";
+                    transcript += event.results[i][0].transcript + " ";
                 }
             }
             document.getElementById("transcript").innerText = transcript;
             console.log('Confidence: ' + event.results[0][0].confidence);
-            isRecognizing = false;
+            recognition.recognizing = false;
         }
 
         // Handle recognition end event
         recognition.onend = function() {
-            isRecognizing = false;
+            recognition.recognizing = false;
         }
     </script>
 </body>
 </html>
-
