@@ -5,31 +5,46 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <style>
+        #transcript {
+            margin-top: 20px;
+            font-size: 18px;
+            font-family: Arial, sans-serif;
+        }
+    </style>
 </head>
 <body>
+    <select id="language">
+        <option value="es-ES">Español</option>
+        <option value="en-US">Inglés</option>
+        <option value="fr-FR">Francés</option>
+    </select>
     <button id="record">Record Voice</button>
-<script>
-// Set up a new Speech Recognizer
-const recognition = new webkitSpeechRecognition();
-// Set the new language setting.
-recognition.lang = "en-US";
-recognition.continuous = false;
-recognition.interimResults = false;
+    <div id="transcript"></div>
+    <script>
+        // Set up a new Speech Recognizer
+        const recognition = new webkitSpeechRecognition();
+        recognition.continuous = false;
+        recognition.interimResults = false;
 
-// Start recognizing after the button is clicked.
-document.getElementById("record").onclick = function() {
-  recognition.start();
-  console.log('Listening...');
-}
+        // Start recognizing after the button is clicked.
+        document.getElementById("record").onclick = function() {
+            // Set the language setting based on the selected option.
+            const languageSelect = document.getElementById("language");
+            recognition.lang = languageSelect.value;
 
-// Once a result is parsed, send the parsed text to a Rasa server
-// Note that all of this is asynchronous, we update on response
-recognition.onresult = function(event) {
-  var transcript = event.results[0][0].transcript;
-  // Log the transcript 
-  console.log(transcript)
-  console.log('Confidence: ' + event.results[0][0].confidence);
-	}
-</script>
+            recognition.start();
+            console.log('Listening...');
+        }
+
+        // Once a result is parsed, display the parsed text on screen.
+        recognition.onresult = function(event) {
+            var transcript = event.results[0][0].transcript;
+            // Display the transcript on screen.
+            document.getElementById("transcript").innerText = transcript;
+            console.log('Confidence: ' + event.results[0][0].confidence);
+        }
+    </script>
 </body>
 </html>
+
