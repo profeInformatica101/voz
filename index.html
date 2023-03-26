@@ -20,7 +20,9 @@
         <option value="fr-FR">Francés</option>
     </select>
     <button id="record">Record Voice</button>
+    <button id="save">Guardar</button>
     <div id="transcript"></div>
+    <textarea id="savedText" rows="10" cols="50" readonly></textarea>
     <script>
         // Set up a new Speech Recognizer
         const recognition = new webkitSpeechRecognition();
@@ -29,6 +31,9 @@
 
         // Keep track of the recognition state
         let isRecognizing = false;
+
+        // Set up the buffer
+        let buffer = '';
 
         // Start recognizing after the button is clicked.
         document.getElementById("record").onclick = function() {
@@ -45,12 +50,22 @@
             console.log('Listening...');
         }
 
+        // Save the buffer content when the save button is clicked.
+        document.getElementById("save").onclick = function() {
+            document.getElementById("savedText").value = buffer;
+        }
+
         // Display the parsed text on screen.
         recognition.onresult = function(event) {
             var transcript = "";
             for (var i = event.resultIndex; i < event.results.length; ++i) {
                 if (event.results[i].isFinal) {
                     transcript += event.results[i][0].transcript;
+                    
+                    // Check confidence and update the buffer
+                    if (event.results[i][0].confidence >= 0.85) {
+                        buffer += event.results[i][0].transcript + " ";
+                    }
                 } else {
                     transcript += event.results[i][0].transcript + " (interim)";
                 }
@@ -67,3 +82,4 @@
     </script>
 </body>
 </html>
+
