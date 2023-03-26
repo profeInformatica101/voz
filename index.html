@@ -24,8 +24,8 @@
     <script>
         // Set up a new Speech Recognizer
         const recognition = new webkitSpeechRecognition();
-        recognition.continuous = false;
-        recognition.interimResults = false;
+        recognition.continuous = true;
+        recognition.interimResults = true;
 
         // Keep track of the recognition state
         let isRecognizing = false;
@@ -45,10 +45,16 @@
             console.log('Listening...');
         }
 
-        // Once a result is parsed, display the parsed text on screen.
+        // Display the parsed text on screen.
         recognition.onresult = function(event) {
-            var transcript = event.results[0][0].transcript;
-            // Display the transcript on screen.
+            var transcript = "";
+            for (var i = event.resultIndex; i < event.results.length; ++i) {
+                if (event.results[i].isFinal) {
+                    transcript += event.results[i][0].transcript;
+                } else {
+                    transcript += event.results[i][0].transcript + " (interim)";
+                }
+            }
             document.getElementById("transcript").innerText = transcript;
             console.log('Confidence: ' + event.results[0][0].confidence);
             isRecognizing = false;
@@ -61,5 +67,3 @@
     </script>
 </body>
 </html>
-
-
